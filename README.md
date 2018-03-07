@@ -16,19 +16,19 @@ Don't ask - I have no idea. It just sounds cool. I believe it is a greek god of 
 - A bare-bones debugger; CLI debugger that supports break points and step-through.
 - Package management; I don't like dependency files like poms and package.json. I will research into doing something at the code level. I don't like managing virtualenv's with Python so having independency by default is a good design decision here, I believe. All project packages/dependencies will download into `./build/...` or something.
 
-# The Language
+## The Language
 - strongly typed, with compile time type checking
 - expressive; I hope to create a language that is expressive by nature without adding too much syntactic sugar like C++ for example. I think they are running out of special chars. Also, once you add the sugar, you cannot take it out. It is there forever.
 - core use case; it's just for fun... It doesn't need to have real commercial applications does it. I don't want to bother myself with such details too soon - I simply want to build a beautiful language.
 
 I will provide some snippets of Hype here soon 👍
 
-# Installation
+## Installation
 
 For now you can open the project in your fav IDE (I am using Intellij IDEA which I included the .idea folder so you can use my workspace straight away.) and run Hype.main. You will be presented with an REPL prompt.
 
 Take a look at [script.hype](https://github.com/andjonno/hyperion/blob/master/script.hype) to get a sense of the lang - though early days so don't judge it too harshly.
 
-# Contribute
+## Contribute
 
 Coming soon - probably once I write more of the language itself, I may have a clearer path to open contributions appropriately.
