@@ -198,7 +198,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       // static method
       return ((HypeClass) object).get(expr.name);
     } else if (object instanceof HypeInstance) {
-      return ((HypeInstance) object).get(expr.name);
+      Object result = ((HypeInstance) object).get(expr.name);
+      if (result instanceof HypeFunction && ((HypeFunction) result).isGetter()) {
+        result = ((HypeFunction) result).call(this, null);
+      }
+      return result;
     }
 
     throw new RuntimeError(expr.name,
@@ -326,7 +330,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       value = evaluate(stmt.value);
     }
 
-    throw new Return(value);
+    throw new ReturnJump(value);
   }
 
   @Override

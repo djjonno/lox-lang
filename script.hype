@@ -5,6 +5,9 @@ class Math {
 	static square(n) {
 		return n * n;
 	}
+	static pi {
+	    return 3.141592653589793;
+	}
 }
 
 class Circle {
@@ -12,10 +15,10 @@ class Circle {
 		this.radius = radius;
 	}
 
-	area() {
-		return Math.square(this.radius) * 3.14;
+	area {
+		return Math.square(this.radius) * Math.pi;
 	}
 }
 
 var c = Circle(10);
-print c.area();
+print c.area;
