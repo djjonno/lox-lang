@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HypeInstance {
-  private HypeClass klass;
-  private final Map<String, Object> fields = new HashMap<>();
+
+  protected HypeClass klass;
+  protected final Map<String, Object> fields = new HashMap<>();
+
+  HypeInstance() {}
 
   HypeInstance(HypeClass klass) {
     this.klass = klass;
@@ -31,4 +34,5 @@ public class HypeInstance {
   public String toString() {
     return klass.name + " instance";
   }
+
 }

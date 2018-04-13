@@ -3,7 +3,7 @@ package org.hyperion.hype;
 import java.util.List;
 import java.util.Map;
 
-public class HypeClass implements HypeCallable {
+public class HypeClass extends HypeInstance implements HypeCallable {
 
   final String name;
   private final Map<String, HypeFunction> methods;
@@ -11,6 +11,7 @@ public class HypeClass implements HypeCallable {
   public HypeClass(String name, Map<String, HypeFunction> methods) {
     this.name = name;
     this.methods = methods;
+    this.klass = this;
   }
 
   HypeFunction findMethod(HypeInstance instance, String name) {
