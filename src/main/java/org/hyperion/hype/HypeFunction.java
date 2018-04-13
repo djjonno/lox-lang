@@ -8,8 +8,7 @@ class HypeFunction implements HypeCallable {
   private final Environment closure;
   private final boolean isInitializer;
 
-  public HypeFunction(Stmt.Function declaration, Environment closure,
-                      boolean isInitializer) {
+  public HypeFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
     this.declaration = declaration;
     this.closure = closure;
     this.isInitializer = isInitializer;

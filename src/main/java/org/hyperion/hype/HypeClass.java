@@ -6,10 +6,14 @@ import java.util.Map;
 public class HypeClass extends HypeInstance implements HypeCallable {
 
   final String name;
+  private final Map<String, HypeFunction> staticMethods;
   private final Map<String, HypeFunction> methods;
 
-  public HypeClass(String name, Map<String, HypeFunction> methods) {
+  public HypeClass(String name,
+                   Map<String, HypeFunction> staticMethods,
+                   Map<String, HypeFunction> methods) {
     this.name = name;
+    this.staticMethods = staticMethods;
     this.methods = methods;
     this.klass = this;
   }
@@ -20,6 +24,19 @@ public class HypeClass extends HypeInstance implements HypeCallable {
     }
 
     return null;
+  }
+
+  /**
+   * Get static members from Class
+   *
+   * @return
+   */
+  Object get(Token name) {
+    HypeFunction method = staticMethods.get(name.lexeme);
+    if (method != null) return method;
+
+    throw new RuntimeError(name,
+        "Undefined property '" + name.lexeme + "'.");
   }
 
   @Override
