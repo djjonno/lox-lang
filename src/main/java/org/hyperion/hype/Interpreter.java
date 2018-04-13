@@ -88,8 +88,28 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
     environment.define(stmt.name.lexeme, null);
+
+    Object superClass = null;
+    if (stmt.superClass != null) {
+      superClass = evaluate(stmt.superClass);
+      if (!(superClass instanceof HypeClass)) {
+        throw new RuntimeError(stmt.name, "Superclass must be a class");
+      }
+
+      environment = new Environment(environment);
+      environment.define("super", superClass);
+    }
+
     Map<String, HypeFunction> staticMethods = new HashMap<>(),
       methods = new HashMap<>();
+
+    for (Stmt.Function staticMethod : stmt.staticMethods) {
+      HypeFunction function = new HypeFunction(staticMethod, environment, false);
+      staticMethods.put(staticMethod.name.lexeme, function);
+    }
+
+    HypeClass metaClass = new HypeClass(null, ((HypeClass) superClass),
+        stmt.name.lexeme + " metaClass", staticMethods);
 
     for (Stmt.Function method : stmt.methods) {
       HypeFunction function = new HypeFunction(method, environment,
@@ -97,12 +117,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       methods.put(method.name.lexeme, function);
     }
 
-    for (Stmt.Function staticMethod : stmt.staticMethods) {
-      HypeFunction function = new HypeFunction(staticMethod, environment, false);
-      staticMethods.put(staticMethod.name.lexeme, function);
+    HypeClass klass = new HypeClass(metaClass, ((HypeClass) superClass), stmt.name.lexeme, methods);
+    if (superClass != null) {
+      environment = environment.enclosing;
     }
 
-    HypeClass klass = new HypeClass(stmt.name.lexeme, staticMethods, methods);
     environment.assign(stmt.name, klass);
     return null;
   }
@@ -194,10 +213,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitGetExpr(Expr.Get expr) {
     Object object = evaluate(expr.object);
 
-    if (object instanceof HypeClass) {
-      // static method
-      return ((HypeClass) object).get(expr.name);
-    } else if (object instanceof HypeInstance) {
+    if (object instanceof HypeInstance) {
       Object result = ((HypeInstance) object).get(expr.name);
       if (result instanceof HypeFunction && ((HypeFunction) result).isGetter()) {
         result = ((HypeFunction) result).call(this, null);

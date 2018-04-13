@@ -98,7 +98,7 @@ public class Parser {
 
     consume(RIGHT_BRACE, "Expect '}' after class body.");
 
-    return new Stmt.Class(name, staticMethods, methods);
+    return new Stmt.Class(name, null, staticMethods, methods);
   }
 
   private Stmt statement() {
