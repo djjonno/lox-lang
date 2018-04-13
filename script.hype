@@ -1,9 +1,21 @@
-
-class Cake {
-    taste() {
-        print "delicious";
-    }
+/*
+ * Math Library
+ */
+class Math {
+	static square(n) {
+		return n * n;
+	}
 }
 
-var cake = Cake();
-cake.taste();
+class Circle {
+	init(radius) {
+		this.radius = radius;
+	}
+
+	area() {
+		return Math.square(this.radius) * 3.14;
+	}
+}
+
+var c = Circle(10);
+print c.area();

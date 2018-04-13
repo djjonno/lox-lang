@@ -88,12 +88,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
     environment.define(stmt.name.lexeme, null);
-    Map<String, HypeFunction> methods = new HashMap<>();
+    Map<String, HypeFunction> staticMethods = new HashMap<>(),
+      methods = new HashMap<>();
+
     for (Stmt.Function method : stmt.methods) {
-      HypeFunction function = new HypeFunction(method, environment);
+      HypeFunction function = new HypeFunction(method, environment,
+          method.name.lexeme.equals("init"));
       methods.put(method.name.lexeme, function);
     }
-    HypeClass klass = new HypeClass(stmt.name.lexeme, methods);
+
+    for (Stmt.Function staticMethod : stmt.staticMethods) {
+      HypeFunction function = new HypeFunction(staticMethod, environment, false);
+      staticMethods.put(staticMethod.name.lexeme, function);
+    }
+
+    HypeClass klass = new HypeClass(stmt.name.lexeme, staticMethods, methods);
     environment.assign(stmt.name, klass);
     return null;
   }
@@ -184,7 +193,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Object visitGetExpr(Expr.Get expr) {
     Object object = evaluate(expr.object);
-    if (object instanceof HypeInstance) {
+
+    if (object instanceof HypeClass) {
+      // static method
+      return ((HypeClass) object).get(expr.name);
+    } else if (object instanceof HypeInstance) {
       return ((HypeInstance) object).get(expr.name);
     }
 
@@ -204,6 +217,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     ((HypeInstance) object).set(expr.name, value);
 
     return value;
+  }
+
+  @Override
+  public Object visitThisExpr(Expr.This expr) {
+    return lookUpVariable(expr.keyword, expr);
   }
 
   @Override
@@ -289,7 +307,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    HypeFunction function = new HypeFunction(stmt, environment);
+    HypeFunction function = new HypeFunction(stmt, environment, false);
     environment.define(stmt.name.lexeme, function);
     return null;
   }
