@@ -14,6 +14,10 @@ class HypeFunction implements HypeCallable {
     this.isInitializer = isInitializer;
   }
 
+  boolean isGetter() {
+    return declaration.parameters == null;
+  }
+
   HypeFunction bind(HypeInstance instance) {
     Environment environment = new Environment(closure);
     environment.define("this", instance);
@@ -28,13 +32,15 @@ class HypeFunction implements HypeCallable {
   @Override
   public Object call(Interpreter interpreter, List<Object> arguments) {
     Environment environment = new Environment(closure);
-    for (int i = 0; i < declaration.parameters.size(); i++) {
-      environment.define(declaration.parameters.get(i).lexeme, arguments.get(i));
+    if (declaration.parameters != null) {
+      for (int i = 0; i < declaration.parameters.size(); i++) {
+        environment.define(declaration.parameters.get(i).lexeme, arguments.get(i));
+      }
     }
 
     try {
       interpreter.executeBlock(declaration.body, environment);
-    } catch (Return returnValue) {
+    } catch (ReturnJump returnValue) {
       return returnValue.value;
     }
 

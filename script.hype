@@ -1,21 +1,35 @@
+
 /*
- * Math Library
+ * Math library.
  */
 class Math {
 	static square(n) {
 		return n * n;
 	}
+
+	static pi() {
+		return 3.14;
+	}
 }
 
-class Circle {
-	init(radius) {
+/* Cylinder object */
+class Cylinder {
+	init(radius, height) {
 		this.radius = radius;
+		this.height = height;
 	}
 
-	area() {
-		return Math.square(this.radius) * 3.14;
+	area {
+		return Math.pi() * Math.square(this.radius);
+	}
+
+	volume {
+		return Math.pi() * Math.square(this.radius) * this.height;
 	}
 }
 
-var c = Circle(10);
-print c.area();
+var circle = Cylinder(5, 10);
+print "circle of radius " + circle.radius + " and height " + circle.height + " has area " + circle.area + " and volume " + circle.volume;
+
+
+
