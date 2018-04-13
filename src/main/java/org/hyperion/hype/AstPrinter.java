@@ -2,6 +2,7 @@ package org.hyperion.hype;
 
 // Creates an unambiguous, if ugly, string representation of AST nodes.
 public class AstPrinter implements Expr.Visitor<String> {
+
   String print(Expr expr) {
     return expr.accept(this);
   }
@@ -38,8 +39,18 @@ public class AstPrinter implements Expr.Visitor<String> {
   }
 
   @Override
+  public String visitSetExpr(Expr.Set expr) {
+    return expr.name.lexeme;
+  }
+
+  @Override
   public String visitLogicalExpr(Expr.Logical expr) {
     return parenthesize(expr.operator.lexeme, expr.left, expr.right);
+  }
+
+  @Override
+  public String visitGetExpr(Expr.Get expr) {
+    return expr.name.toString();
   }
 
   @Override
