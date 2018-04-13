@@ -10,12 +10,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private enum FunctionType {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
+  }
+
+  private enum ClassType {
+    NONE,
+    CLASS
   }
 
   private final Interpreter interpreter;
   private final Stack<HashMap<String, Boolean>> scopes = new Stack<>();
   private FunctionType currentFunction = FunctionType.NONE;
+  private ClassType currentClass = ClassType.NONE;
 
   public Resolver(Interpreter interpreter) {
     this.interpreter = interpreter;
@@ -139,6 +146,17 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Void visitThisExpr(Expr.This expr) {
+    if (currentClass == ClassType.NONE) {
+      Hype.error(expr.keyword,
+          "Cannt use 'this' outside of a class.");
+      return null;
+    }
+    resolveLocal(expr, expr.keyword);
+    return null;
+  }
+
+  @Override
   public Void visitUnaryExpr(Expr.Unary expr) {
     resolve(expr.right);
     return null;
@@ -169,11 +187,23 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     declare(stmt.name);
     define(stmt.name);
 
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType.CLASS;
+
+    beginScope();
+    scopes.peek().put("this", true);
+
     for (Stmt.Function method : stmt.methods) {
       FunctionType declaration = FunctionType.METHOD;
+      if (method.name.lexeme.equals("init")) {
+        declaration = FunctionType.INITIALIZER;
+      }
       resolveFunction(method, declaration);
     }
 
+    endScope();
+
+    currentClass = enclosingClass;
     return null;
   }
 
@@ -220,6 +250,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     if (stmt.value != null) {
+      if (currentFunction == FunctionType.INITIALIZER) {
+        Hype.error(stmt.keyword,
+            "Cannot return a value from an initializer.");
+      }
       resolve(stmt.value);
     }
     return null;

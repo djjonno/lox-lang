@@ -6,9 +6,19 @@ class HypeFunction implements HypeCallable {
 
   private final Stmt.Function declaration;
   private final Environment closure;
-  public HypeFunction(Stmt.Function declaration, Environment closure) {
+  private final boolean isInitializer;
+
+  public HypeFunction(Stmt.Function declaration, Environment closure,
+                      boolean isInitializer) {
     this.declaration = declaration;
     this.closure = closure;
+    this.isInitializer = isInitializer;
+  }
+
+  HypeFunction bind(HypeInstance instance) {
+    Environment environment = new Environment(closure);
+    environment.define("this", instance);
+    return new HypeFunction(declaration, environment, isInitializer);
   }
 
   @Override
@@ -28,6 +38,8 @@ class HypeFunction implements HypeCallable {
     } catch (Return returnValue) {
       return returnValue.value;
     }
+
+    if (isInitializer) return closure.getAt(0, "this");
     return null;
   }
 
