@@ -33,8 +33,37 @@ class Vector : Point {
 
 var v = Vector(10, 20, 1, 2);
 var p = Point(5, 10);
-
 p.add(v);
 
-print p.x + "," + p.y;
-print 5 % 2;
+var a = [1,2,3,4,5*5];
+
+for (var i = 0; i < a.length(); i = i + 1) {
+    print ">" + a[i];
+}
+
+fn fib(n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+    return fib(n - 1) + fib(n - 2);
+}
+
+var nums = [];
+for (var i = 0; i < 10; i = i + 1) {
+    nums.add(fib(i));
+}
+
+print nums;
+
+// reverse list, in place.
+for (var i = 0; i < nums.length() / 2; i = i + 1) {
+	var t = nums[i];
+	nums[i] = nums[nums.length() - 1 - i];
+	nums[nums.length() - 1 - i] = t;
+}
+
+print nums;
+
+
+
+
+

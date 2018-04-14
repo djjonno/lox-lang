@@ -7,6 +7,9 @@ abstract class Expr {
     R visitAssignExpr(Assign expr);
     R visitBinaryExpr(Binary expr);
     R visitCallExpr(Call expr);
+    R visitIndexGetExpr(IndexGet expr);
+    R visitIndexSetExpr(IndexSet expr);
+    R visitArrayExpr(Array expr);
     R visitGetExpr(Get expr);
     R visitGroupingExpr(Grouping expr);
     R visitLiteralExpr(Literal expr);
@@ -59,6 +62,51 @@ abstract class Expr {
     final Expr callee;
     final Token paren;
     final List<Expr> arguments;
+  }
+  static class IndexGet extends Expr {
+    IndexGet(Expr indexee, Token bracket, Expr index) {
+      this.indexee = indexee;
+      this.bracket = bracket;
+      this.index = index;
+    }
+
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitIndexGetExpr(this);
+    }
+
+    final Expr indexee;
+    final Token bracket;
+    final Expr index;
+  }
+  static class IndexSet extends Expr {
+    IndexSet(Expr indexee, Token bracket, Expr index, Expr value) {
+      this.indexee = indexee;
+      this.bracket = bracket;
+      this.index = index;
+      this.value = value;
+    }
+
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitIndexSetExpr(this);
+    }
+
+    final Expr indexee;
+    final Token bracket;
+    final Expr index;
+    final Expr value;
+  }
+  static class Array extends Expr {
+    Array(Token bracket, List<Expr> elements) {
+      this.bracket = bracket;
+      this.elements = elements;
+    }
+
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitArrayExpr(this);
+    }
+
+    final Token bracket;
+    final List<Expr> elements;
   }
   static class Get extends Expr {
     Get(Expr object, Token name) {

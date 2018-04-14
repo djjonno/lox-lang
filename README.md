@@ -7,6 +7,7 @@ I am creating this language to scratch a persistent, lingering itch of mine to d
 Don't ask - I have no idea. It just sounds cool. I believe it is a greek god of some sort...
 
 ## Roadmap
+- arrays/collections, looping over collections, file I/O, lambdas
 - object-oriented & functional; functions are first class objects and can be passed around.
 - compiled; performance is important and once the grammar has been properly fleshed out to a point where I feel it has stabilised, I will begin porting Hype over to machine by building a compiler with LLVM. LLVM will provide us with good portability cross-platforms and cross-architectures.
 - build a garbage collector; I would love to base it off Go-lang's garbage collector so this will involve considerable research into how that works.

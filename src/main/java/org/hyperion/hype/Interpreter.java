@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hyperion.hype.TokenType.*;
 
@@ -204,7 +205,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     HypeCallable function = (HypeCallable)callee;
 
-    if (arguments.size() != function.arity()) {
+    if (arguments.size() != function.arity() && !function.variadic()) {
       throw new RuntimeError(expr.paren, "Expected " +
               function.arity() + " arguments but got " +
               arguments.size() + ".");
@@ -225,6 +226,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       return result;
     }
 
+    if (object instanceof HypeArray) {
+      return ((HypeArray) object).getMethod(expr.name);
+    }
+
     throw new RuntimeError(expr.name,
         "Only instances have properties.");
   }
@@ -240,6 +245,28 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     Object value = evaluate(expr.value);
     ((HypeInstance) object).set(expr.name, value);
 
+    return value;
+  }
+
+  @Override
+  public Object visitIndexGetExpr(Expr.IndexGet expr) {
+    Object indexee = evaluate(expr.indexee);
+    Object index = evaluate(expr.index);
+    if (indexee instanceof HypeIndexable) {
+      return ((HypeIndexable) indexee).get(expr.bracket, index);
+    }
+    return null;
+  }
+
+  @Override
+  public Object visitIndexSetExpr(Expr.IndexSet expr) {
+    Object indexee = evaluate(expr.indexee);
+    if (!(indexee instanceof HypeIndexable)) {
+      throw new RuntimeError(expr.bracket, "Variable is not indexable");
+    }
+    Object index = evaluate(expr.index);
+    Object value = evaluate(expr.value);
+    ((HypeIndexable) indexee).set(expr.bracket, index, value);
     return value;
   }
 
@@ -272,6 +299,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
     return expr.value;
+  }
+
+  @Override
+  public Object visitArrayExpr(Expr.Array expr) {
+    return new HypeArray(expr.elements.stream()
+        .map(this::evaluate)
+        .collect(Collectors.toList()));
   }
 
   @Override
@@ -334,6 +368,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         text = text.substring(0, text.length() - 2);
       }
       return text;
+    }
+
+    if (object instanceof HypeArray) {
+      List<String> elStrings = ((HypeArray) object).getElements().stream()
+          .map(this::stringify)
+          .collect(Collectors.toList());
+      return "[" + String.join(", ", elStrings) + "]";
     }
 
     return object.toString();
