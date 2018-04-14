@@ -11,36 +11,30 @@ class Math {
 	}
 }
 
-class Shape {
-    area {
-        return 0;
-    }
-}
-
-class Circle : Shape {
-    init(radius) {
-        this.radius = radius;
-    }
-
-    area {
-        return Math.pi() * Math.square(this.radius);
-    }
-}
-
-/* Cylinder object */
-class Cylinder : Circle {
-	init(radius, height) {
-	    super.init(radius);
-		this.height = height;
+class Point {
+	init(x, y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	volume {
-		return Math.pi() * Math.square(this.radius) * this.height;
+	add(point) {
+		this.x = this.x + point.x;
+		this.y = this.y + point.y;
 	}
 }
 
-var circle = Cylinder(5, 10);
-print "circle of radius " + circle.radius + " and height " + circle.height
-    + " has area " + circle.area + " and volume " + circle.volume;
+class Vector : Point {
+	init(x, y, direction, speed) {
+		super.init(x, y);
+		this.direction = direction;
+		this.speed = speed;
+	}
+}
 
+var v = Vector(10, 20, 1, 2);
+var p = Point(5, 10);
 
+p.add(v);
+
+print p.x + "," + p.y;
+print 5 % 2;

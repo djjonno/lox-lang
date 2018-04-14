@@ -174,6 +174,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         checkNumberOperands(expr.operator, left, right);
         return (double)left * (double)right;
 
+      case MODULO:
+        checkNumberOperands(expr.operator, left, right);
+        return (double)left % (double)right;
+
       case BANG_EQUAL: return !isEqual(left, right);
       case EQUAL_EQUAL: return isEqual(left, right);
       case COMMA:
