@@ -330,6 +330,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return !isTruthy(right);
       case MINUS:
         return -(double)right;
+      case PLUS_PLUS: case MINUS_MINUS:
+        if (!(expr.right instanceof Expr.Variable)) {
+          throw new RuntimeError(expr.operator,
+              "Operand of increment op must be a variable.");
+        }
+        checkNumberOperand(expr.operator, right);
+        double value = (double) right;
+        Expr.Variable var = (Expr.Variable) expr.right;
+        double nextValue = expr.operator.type == PLUS_PLUS ? value + 1 : value - 1;
+        environment.assign(var.name, nextValue);
+        if (expr.postfix) {
+          return value;
+        } else {
+          return nextValue;
+        }
     }
 
     return null;

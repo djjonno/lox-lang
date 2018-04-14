@@ -329,7 +329,25 @@ public class Parser {
     if (match(BANG, MINUS)) {
       Token operator = previous();
       Expr right = unary();
-      return new Expr.Unary(operator, right);
+      return new Expr.Unary(operator, right, false);
+    }
+
+    if (match(PLUS_PLUS, MINUS_MINUS)) {
+      Token operator = previous();
+      Expr right = primary();
+      return new Expr.Unary(operator, right, false);
+    }
+
+    return postfix();
+  }
+
+  private Expr postfix() {
+    if (matchNext(PLUS_PLUS, MINUS_MINUS)) {
+      Token operator = peek();
+      current--;
+      Expr left = primary();
+      advance();
+      return new Expr.Unary(operator, left, true);
     }
 
     return call();
@@ -423,6 +441,16 @@ public class Parser {
     return false;
   }
 
+  private boolean matchNext(TokenType... types) {
+    for (TokenType type : types) {
+      if (checkNext(type)) {
+        advance();
+        return true;
+      }
+    }
+    return false;
+  }
+
   private Token consume(TokenType type, String message) {
     if (check(type)) return advance();
 
@@ -432,6 +460,16 @@ public class Parser {
   private boolean check(TokenType tokenType) {
     if (isAtEnd()) return false;
     return peek().type == tokenType;
+  }
+
+  private boolean checkNext(TokenType tokenType) {
+    if (isAtEnd()) {
+      return false;
+    }
+    if (tokens.get(current + 1).type == EOF) {
+      return false;
+    }
+    return tokens.get(current + 1).type == tokenType;
   }
 
   private Token advance() {
