@@ -1,69 +1,51 @@
-/*
- * Math library.
- */
+
 class Math {
-	static square(n) {
-		return n * n;
-	}
-
-	static pi() {
-		return 3.14;
-	}
+	/* Static method to square the given number. */
+	static square(n) { return n * n; }
+	static pi() { return 3.145; }
 }
 
-class Point {
-	init(x, y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	add(point) {
-		this.x = this.x + point.x;
-		this.y = this.y + point.y;
-	}
+/* Shape interface */
+class Shape {
+	area() {}
+	vertices() {}
 }
 
-class Vector : Point {
-	init(x, y, direction, speed) {
-		super.init(x, y);
-		this.direction = direction;
-		this.speed = speed;
+class Circle : Shape {
+	init(radius) {
+		this.radius = radius;
+	}
+
+	area() {
+		return Math.pi() * Math.square(this.radius);
+	}
+
+	vertices() {
+		return [[0,0]];
 	}
 }
 
-var v = Vector(10, 20, 1, 2);
-var p = Point(5, 10);
-p.add(v);
+class Tube : Circle {
+	init(radius, h) {
+		super.init(radius);
+		this.h = h;
+	}
 
-var a = [1,2,3,4,5*5];
-
-for (var i = 0; i < a.length(); i = i + 1) {
-    print ">" + a[i];
+	area() { return super.area(); }
+	vertices() { return super.vertices(); }
 }
 
-fn fib(n) {
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-    return fib(n - 1) + fib(n - 2);
+
+var l = [];
+for (var i = 0; i < 10; i++) {
+	l.add(Math.square(i));
 }
 
-var nums = [];
-for (var i = 0; i < 10; i = i + 1) {
-    nums.add(fib(i));
-}
+var c = Circle(10);
+print c.area();
+print c.vertices();
 
-print nums;
-
-// reverse list, in place.
-for (var i = 0; i < nums.length() / 2; i = i + 1) {
-	var t = nums[i];
-	nums[i] = nums[nums.length() - 1 - i];
-	nums[nums.length() - 1 - i] = t;
-}
-
-print nums;
-
-
-
-
+var t = Tube(5, 20);
+print t.area();
+print t.vertices();
 
