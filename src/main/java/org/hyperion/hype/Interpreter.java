@@ -15,17 +15,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private final Map<Expr, Integer> locals = new HashMap<>();
 
   public Interpreter() {
-    globals.define("clock", new HypeCallable() {
-      @Override
-      public int arity() {
-        return 0;
-      }
-
-      @Override
-      public Object call(Interpreter interpreter, List<Object> arguments) {
-        return (double)System.currentTimeMillis() / 1000.0;
-      }
-    });
+    NativeFunctions.define(globals);
   }
 
   void interpret(List<Stmt> statements) {
@@ -101,16 +91,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       environment.define("super", superclass);
     }
 
-    Map<String, HypeFunction> staticMethods = new HashMap<>(),
+    Map<String, HypeFunction> classMethods = new HashMap<>(),
       methods = new HashMap<>();
 
-    for (Stmt.Function staticMethod : stmt.staticMethods) {
+    for (Stmt.Function staticMethod : stmt.classMethods) {
       HypeFunction function = new HypeFunction(staticMethod, environment, false);
-      staticMethods.put(staticMethod.name.lexeme, function);
+      classMethods.put(staticMethod.name.lexeme, function);
     }
 
     HypeClass metaClass = new HypeClass(null, ((HypeClass) superclass),
-        stmt.name.lexeme + " metaClass", staticMethods);
+        stmt.name.lexeme + " metaClass", classMethods);
 
     for (Stmt.Function method : stmt.methods) {
       HypeFunction function = new HypeFunction(method, environment,
@@ -283,6 +273,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
           "Undefined property '" + expr.method.lexeme + "'.");
     }
 
+    if (((HypeFunction) method).isGetter()) {
+      return ((HypeFunction) method).call(this, null);
+    }
+
     return method;
   }
 
@@ -373,7 +367,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     return a.equals(b);
   }
 
-  private String stringify(Object object) {
+  public String stringify(Object object) {
     if (object == null) return "nil";
 
     // Hack. Work around Java adding ".0" to integer-valued doubles.
@@ -405,13 +399,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Void visitFunctionStmt(Stmt.Function stmt) {
     HypeFunction function = new HypeFunction(stmt, environment, false);
     environment.define(stmt.name.lexeme, function);
-    return null;
-  }
-
-  @Override
-  public Void visitPrintStmt(Stmt.Print stmt) {
-    Object value = evaluate(stmt.expression);
-    System.out.println(stringify(value));
     return null;
   }
 

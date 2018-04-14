@@ -1,8 +1,8 @@
 
 class Math {
 	/* Static method to square the given number. */
-	static square(n) { return n * n; }
-	static pi() { return 3.145; }
+	class square(n) { return n * n; }
+	class pi() { return 3.145; }
 }
 
 /* Shape interface */
@@ -23,6 +23,8 @@ class Circle : Shape {
 	vertices() {
 		return [[0,0]];
 	}
+
+	hello { return "Circle"; }
 }
 
 class Tube : Circle {
@@ -33,6 +35,9 @@ class Tube : Circle {
 
 	area() { return super.area(); }
 	vertices() { return super.vertices(); }
+
+
+	hello { return super.hello; }
 }
 
 
@@ -42,10 +47,14 @@ for (var i = 0; i < 10; i++) {
 }
 
 var c = Circle(10);
-print c.area();
-print c.vertices();
+log(c.area());
+log(c.vertices());
 
 var t = Tube(5, 20);
-print t.area();
-print t.vertices();
+log(t.area());
+log(t.vertices());
+log(t.hello);
+
+var i = input("what is your name?");
+log("your name is", i);
 

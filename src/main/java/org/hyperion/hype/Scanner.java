@@ -24,14 +24,12 @@ public class Scanner {
     keywords.put("if",     IF);
     keywords.put("nil",    NIL);
     keywords.put("or",     OR);
-    keywords.put("print",  PRINT);
     keywords.put("return", RETURN);
     keywords.put("super",  SUPER);
     keywords.put("this",   THIS);
     keywords.put("true",   TRUE);
     keywords.put("var",    VAR);
     keywords.put("while",  WHILE);
-    keywords.put("static", STATIC);
   }
 
   public Scanner(String source) {

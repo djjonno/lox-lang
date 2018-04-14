@@ -10,7 +10,6 @@ abstract class Stmt {
     R visitFunctionStmt(Function stmt);
     R visitIfStmt(If stmt);
     R visitWhileStmt(While stmt);
-    R visitPrintStmt(Print stmt);
     R visitReturnStmt(Return stmt);
     R visitVarStmt(Var stmt);
   }
@@ -26,10 +25,10 @@ abstract class Stmt {
     final List<Stmt> statements;
   }
   static class Class extends Stmt {
-    Class(Token name, Expr.Variable superclass, List<Stmt.Function> staticMethods, List<Stmt.Function> methods) {
+    Class(Token name, Expr.Variable superclass, List<Stmt.Function> classMethods, List<Stmt.Function> methods) {
       this.name = name;
       this.superclass = superclass;
-      this.staticMethods = staticMethods;
+      this.classMethods = classMethods;
       this.methods = methods;
     }
 
@@ -39,7 +38,7 @@ abstract class Stmt {
 
     final Token name;
     final Expr.Variable superclass;
-    final List<Stmt.Function> staticMethods;
+    final List<Stmt.Function> classMethods;
     final List<Stmt.Function> methods;
   }
   static class Expression extends Stmt {
@@ -95,17 +94,6 @@ abstract class Stmt {
 
     final Expr condition;
     final Stmt body;
-  }
-  static class Print extends Stmt {
-    Print(Expr expression) {
-      this.expression = expression;
-    }
-
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitPrintStmt(this);
-    }
-
-    final Expr expression;
   }
   static class Return extends Stmt {
     Return(Token keyword, Expr value) {

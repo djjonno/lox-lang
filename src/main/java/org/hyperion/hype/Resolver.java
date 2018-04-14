@@ -246,7 +246,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
       resolveFunction(method, declaration);
     }
 
-    for (Stmt.Function staticMethod : stmt.staticMethods) {
+    for (Stmt.Function staticMethod : stmt.classMethods) {
       resolveFunction(staticMethod, FunctionType.METHOD);
     }
 
@@ -284,12 +284,6 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitWhileStmt(Stmt.While stmt) {
     resolve(stmt.condition);
     resolve(stmt.body);
-    return null;
-  }
-
-  @Override
-  public Void visitPrintStmt(Stmt.Print stmt) {
-    resolve(stmt.expression);
     return null;
   }
 

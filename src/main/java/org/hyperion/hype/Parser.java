@@ -113,21 +113,20 @@ public class Parser {
 
     consume(LEFT_BRACE, "Expect '{' before class body.");
 
-    List<Stmt.Function> staticMethods = new ArrayList<>();
+    List<Stmt.Function> classMethods = new ArrayList<>();
     List<Stmt.Function> methods = new ArrayList<>();
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
-      (match(STATIC) ? staticMethods : methods).add(function("method"));
+      (match(CLASS) ? classMethods : methods).add(function("method"));
     }
 
     consume(RIGHT_BRACE, "Expect '}' after class body.");
 
-    return new Stmt.Class(name, superclass, staticMethods, methods);
+    return new Stmt.Class(name, superclass, classMethods, methods);
   }
 
   private Stmt statement() {
     if (match(IF)) return ifStatement();
     if (match(FOR)) return forStatement();
-    if (match(PRINT)) return printStatement();
     if (match(RETURN)) return returnStatement();
     if (match(WHILE)) return whileStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
@@ -194,12 +193,6 @@ public class Parser {
     }
 
     return body;
-  }
-
-  private Stmt printStatement() {
-    Expr value = expression();
-    consume(SEMICOLON, "Expect ';' after value.");
-    return new Stmt.Print(value);
   }
 
   private Stmt returnStatement() {
@@ -507,7 +500,6 @@ public class Parser {
         case FOR:
         case IF:
         case WHILE:
-        case PRINT:
         case RETURN:
           return;
       }
