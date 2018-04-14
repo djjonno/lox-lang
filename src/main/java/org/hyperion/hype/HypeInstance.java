@@ -32,7 +32,7 @@ public class HypeInstance {
 
   @Override
   public String toString() {
-    return klass.name + " instance";
+    return "<" + klass.name + " instance>";
   }
 
 }

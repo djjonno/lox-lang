@@ -124,6 +124,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Void visitIndexGetExpr(Expr.IndexGet expr) {
+    resolve(expr.indexee);
+    resolve(expr.index);
+    return null;
+  }
+
+  @Override
   public Void visitGroupingExpr(Expr.Grouping expr) {
     resolve(expr.expression);
     return null;
@@ -131,6 +138,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitLiteralExpr(Expr.Literal expr) {
+    return null;
+  }
+
+  @Override
+  public Void visitArrayExpr(Expr.Array expr) {
+    expr.elements.forEach(this::resolve);
     return null;
   }
 
@@ -145,6 +158,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitSetExpr(Expr.Set expr) {
     resolve(expr.value);
     resolve(expr.object);
+    return null;
+  }
+
+  @Override
+  public Void visitIndexSetExpr(Expr.IndexSet expr) {
+    resolve(expr.value);
+    resolve(expr.indexee);
+    resolve(expr.index);
     return null;
   }
 

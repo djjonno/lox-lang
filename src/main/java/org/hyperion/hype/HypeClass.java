@@ -50,7 +50,7 @@ public class HypeClass extends HypeInstance implements HypeCallable {
 
   @Override
   public String toString() {
-    return name;
+    return "<" + name + ">";
   }
 
 }
