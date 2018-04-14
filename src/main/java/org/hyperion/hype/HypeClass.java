@@ -6,15 +6,15 @@ import java.util.Map;
 public class HypeClass extends HypeInstance implements HypeCallable {
 
   final String name;
-  final HypeClass superClass;
+  final HypeClass superclass;
   private final Map<String, HypeFunction> methods;
 
   public HypeClass(HypeClass metaClass,
-                   HypeClass superClass,
+                   HypeClass superclass,
                    String name,
                    Map<String, HypeFunction> methods) {
     super(metaClass);
-    this.superClass = superClass;
+    this.superclass = superclass;
     this.name = name;
     this.methods = methods;
   }
@@ -23,8 +23,9 @@ public class HypeClass extends HypeInstance implements HypeCallable {
     if (methods.containsKey(name)) {
       return methods.get(name).bind(instance);
     }
-    if (superClass != null) {
-      return superClass.findMethod(instance, name);
+
+    if (superclass != null) {
+      return superclass.findMethod(instance, name);
     }
 
     return null;

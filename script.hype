@@ -1,4 +1,3 @@
-
 /*
  * Math library.
  */
@@ -12,15 +11,27 @@ class Math {
 	}
 }
 
-/* Cylinder object */
-class Cylinder {
-	init(radius, height) {
-		this.radius = radius;
-		this.height = height;
-	}
+class Shape {
+    area {
+        return 0;
+    }
+}
 
-	area {
-		return Math.pi() * Math.square(this.radius);
+class Circle : Shape {
+    init(radius) {
+        this.radius = radius;
+    }
+
+    area {
+        return Math.pi() * Math.square(this.radius);
+    }
+}
+
+/* Cylinder object */
+class Cylinder : Circle {
+	init(radius, height) {
+	    super.init(radius);
+		this.height = height;
 	}
 
 	volume {
@@ -29,7 +40,7 @@ class Cylinder {
 }
 
 var circle = Cylinder(5, 10);
-print "circle of radius " + circle.radius + " and height " + circle.height + " has area " + circle.area + " and volume " + circle.volume;
-
+print "circle of radius " + circle.radius + " and height " + circle.height
+    + " has area " + circle.area + " and volume " + circle.volume;
 
 

@@ -89,15 +89,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Void visitClassStmt(Stmt.Class stmt) {
     environment.define(stmt.name.lexeme, null);
 
-    Object superClass = null;
-    if (stmt.superClass != null) {
-      superClass = evaluate(stmt.superClass);
-      if (!(superClass instanceof HypeClass)) {
+    Object superclass = null;
+    if (stmt.superclass != null) {
+      superclass = evaluate(stmt.superclass);
+      if (!(superclass instanceof HypeClass)) {
         throw new RuntimeError(stmt.name, "Superclass must be a class");
       }
 
       environment = new Environment(environment);
-      environment.define("super", superClass);
+      environment.define("super", superclass);
     }
 
     Map<String, HypeFunction> staticMethods = new HashMap<>(),
@@ -108,7 +108,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       staticMethods.put(staticMethod.name.lexeme, function);
     }
 
-    HypeClass metaClass = new HypeClass(null, ((HypeClass) superClass),
+    HypeClass metaClass = new HypeClass(null, ((HypeClass) superclass),
         stmt.name.lexeme + " metaClass", staticMethods);
 
     for (Stmt.Function method : stmt.methods) {
@@ -117,8 +117,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       methods.put(method.name.lexeme, function);
     }
 
-    HypeClass klass = new HypeClass(metaClass, ((HypeClass) superClass), stmt.name.lexeme, methods);
-    if (superClass != null) {
+    HypeClass klass = new HypeClass(metaClass, ((HypeClass) superclass), stmt.name.lexeme, methods);
+    if (superclass != null) {
       environment = environment.enclosing;
     }
 
@@ -237,6 +237,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     ((HypeInstance) object).set(expr.name, value);
 
     return value;
+  }
+
+  @Override
+  public Object visitSuperExpr(Expr.Super expr) {
+    int distance = locals.get(expr);
+    HypeClass superclass = (HypeClass)environment.getAt(distance, "super");
+    // "this" is always one level nearer than "super"'s environment.
+    HypeInstance object = (HypeInstance)environment.getAt(distance - 1, "this");
+    HypeFunction method = superclass.findMethod(object, expr.method.lexeme);
+
+    if (method == null) {
+      throw new RuntimeError(expr.method,
+          "Undefined property '" + expr.method.lexeme + "'.");
+    }
+
+    return method;
   }
 
   @Override
