@@ -1,0 +1,36 @@
+
+/*
+ * Math library
+ */
+class Math {
+	class square(n) {
+		return n * n;
+	}
+
+	class PI() {
+		return 3.141592653589793;
+	}
+
+	class sqrt(n) {
+		return n ** 0.5;
+	}
+}
+
+class Point {
+	init(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	distanceTo(point) {
+		// pythag
+		return Math.sqrt((point.x - this.x) ** 2 + (point.y - this.y) ** 2);
+	}
+}
+
+var p1 = Point(10, 0);
+var p2 = Point(0, 10);
+log(p1.distanceTo(p2));
+
+
+

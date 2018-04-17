@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 public class Token {
   final TokenType type;

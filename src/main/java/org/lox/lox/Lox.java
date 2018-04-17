@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class Hype {
+public class Lox {
 
   private static final Interpreter interpreter = new Interpreter();
 
@@ -17,7 +17,7 @@ public class Hype {
 
   public static void main(String[] args) throws Exception {
     if (args.length > 1) {
-      System.out.println("usage: hype [script]");
+      System.out.println("usage: lox [script]");
     } else if (args.length == 1) {
       runFile(args[0]);
     } else {

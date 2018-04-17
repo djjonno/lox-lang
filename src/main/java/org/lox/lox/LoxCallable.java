@@ -1,8 +1,8 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.List;
 
-interface HypeCallable {
+interface LoxCallable {
   int arity();
   default boolean variadic() {
     return false;

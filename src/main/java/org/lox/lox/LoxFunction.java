@@ -1,14 +1,14 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.List;
 
-class HypeFunction implements HypeCallable {
+class LoxFunction implements LoxCallable {
 
   private final Stmt.Function declaration;
   private final Environment closure;
   private final boolean isInitializer;
 
-  public HypeFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
+  public LoxFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
     this.declaration = declaration;
     this.closure = closure;
     this.isInitializer = isInitializer;
@@ -18,10 +18,10 @@ class HypeFunction implements HypeCallable {
     return declaration.parameters == null;
   }
 
-  HypeFunction bind(HypeInstance instance) {
+  LoxFunction bind(LoxInstance instance) {
     Environment environment = new Environment(closure);
     environment.define("this", instance);
-    return new HypeFunction(declaration, environment, isInitializer);
+    return new LoxFunction(declaration, environment, isInitializer);
   }
 
   @Override

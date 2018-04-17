@@ -1,6 +1,6 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
-interface HypeIndexable {
+interface LoxIndexable {
 
   Object get(Token token, Object index);
 

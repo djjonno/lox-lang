@@ -1,8 +1,8 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.*;
 
-import static org.hyperion.hype.TokenType.*;
+import static org.lox.lox.TokenType.*;
 
 public class Scanner {
 
@@ -65,7 +65,7 @@ public class Scanner {
       case '+': addToken(match('+') ? PLUS_PLUS : PLUS); break;
       case ';': addToken(SEMICOLON); break;
       case ':': addToken(COLON); break;
-      case '*': addToken(STAR); break;
+      case '*': addToken(match('*') ? EXPONENT : STAR); break;
       case '%': addToken(MODULO); break;
       case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
       case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
@@ -99,7 +99,7 @@ public class Scanner {
         } else if (isAlpha(c)) {
           identifier();
         } else {
-          Hype.error(line, "Unexpected character.");
+          Lox.error(line, "Unexpected character.");
         }
         break;
     }
@@ -140,7 +140,7 @@ public class Scanner {
 
     // Unterminated string
     if (isAtEnd()) {
-      Hype.error(line, "Unterminated string.");
+      Lox.error(line, "Unterminated string.");
       return;
     }
 

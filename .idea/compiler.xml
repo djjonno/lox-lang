@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="hyperion" />
+        <module name="lox" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="hyperion" target="1.8" />
+      <module name="lox" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.hyperion.hype.TokenType.*;
+import static org.lox.lox.TokenType.*;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
@@ -24,7 +24,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         execute(stmt);
       }
     } catch (RuntimeError error) {
-      Hype.runtimeError(error);
+      Lox.runtimeError(error);
     }
   }
 
@@ -83,7 +83,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     Object superclass = null;
     if (stmt.superclass != null) {
       superclass = evaluate(stmt.superclass);
-      if (!(superclass instanceof HypeClass)) {
+      if (!(superclass instanceof LoxClass)) {
         throw new RuntimeError(stmt.name, "Superclass must be a class");
       }
 
@@ -91,24 +91,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       environment.define("super", superclass);
     }
 
-    Map<String, HypeFunction> classMethods = new HashMap<>(),
+    Map<String, LoxFunction> classMethods = new HashMap<>(),
       methods = new HashMap<>();
 
     for (Stmt.Function staticMethod : stmt.classMethods) {
-      HypeFunction function = new HypeFunction(staticMethod, environment, false);
+      LoxFunction function = new LoxFunction(staticMethod, environment, false);
       classMethods.put(staticMethod.name.lexeme, function);
     }
 
-    HypeClass metaClass = new HypeClass(null, ((HypeClass) superclass),
+    LoxClass metaClass = new LoxClass(null, ((LoxClass) superclass),
         stmt.name.lexeme + " metaClass", classMethods);
 
     for (Stmt.Function method : stmt.methods) {
-      HypeFunction function = new HypeFunction(method, environment,
+      LoxFunction function = new LoxFunction(method, environment,
           method.name.lexeme.equals("init"));
       methods.put(method.name.lexeme, function);
     }
 
-    HypeClass klass = new HypeClass(metaClass, ((HypeClass) superclass), stmt.name.lexeme, methods);
+    LoxClass klass = new LoxClass(metaClass, ((LoxClass) superclass), stmt.name.lexeme, methods);
     if (superclass != null) {
       environment = environment.enclosing;
     }
@@ -164,7 +164,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       case STAR:
         checkNumberOperands(expr.operator, left, right);
         return (double)left * (double)right;
-
+      case EXPONENT:
+        checkNumberOperands(expr.operator, left, right);
+        return Math.pow((double)left, (double)right);
       case MODULO:
         checkNumberOperands(expr.operator, left, right);
         return (double)left % (double)right;
@@ -188,12 +190,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       arguments.add(evaluate(argument));
     }
 
-    if (!(callee instanceof HypeCallable)) {
+    if (!(callee instanceof LoxCallable)) {
       throw new RuntimeError(expr.paren,
               "Can only call functions and classes.");
     }
 
-    HypeCallable function = (HypeCallable)callee;
+    LoxCallable function = (LoxCallable)callee;
 
     if (arguments.size() != function.arity() && !function.variadic()) {
       throw new RuntimeError(expr.paren, "Expected " +
@@ -208,16 +210,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitGetExpr(Expr.Get expr) {
     Object object = evaluate(expr.object);
 
-    if (object instanceof HypeInstance) {
-      Object result = ((HypeInstance) object).get(expr.name);
-      if (result instanceof HypeFunction && ((HypeFunction) result).isGetter()) {
-        result = ((HypeFunction) result).call(this, null);
+    if (object instanceof LoxInstance) {
+      Object result = ((LoxInstance) object).get(expr.name);
+      if (result instanceof LoxFunction && ((LoxFunction) result).isGetter()) {
+        result = ((LoxFunction) result).call(this, null);
       }
       return result;
     }
 
-    if (object instanceof HypeArray) {
-      return ((HypeArray) object).getMethod(expr.name);
+    if (object instanceof LoxArray) {
+      return ((LoxArray) object).getMethod(expr.name);
     }
 
     throw new RuntimeError(expr.name,
@@ -228,12 +230,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitSetExpr(Expr.Set expr) {
     Object object = evaluate(expr.object);
 
-    if (!(object instanceof HypeInstance)) {
+    if (!(object instanceof LoxInstance)) {
       throw new RuntimeError(expr.name, "Only instances have fields.");
     }
 
     Object value = evaluate(expr.value);
-    ((HypeInstance) object).set(expr.name, value);
+    ((LoxInstance) object).set(expr.name, value);
 
     return value;
   }
@@ -242,8 +244,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitIndexGetExpr(Expr.IndexGet expr) {
     Object indexee = evaluate(expr.indexee);
     Object index = evaluate(expr.index);
-    if (indexee instanceof HypeIndexable) {
-      return ((HypeIndexable) indexee).get(expr.bracket, index);
+    if (indexee instanceof LoxIndexable) {
+      return ((LoxIndexable) indexee).get(expr.bracket, index);
     }
     return null;
   }
@@ -251,30 +253,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Object visitIndexSetExpr(Expr.IndexSet expr) {
     Object indexee = evaluate(expr.indexee);
-    if (!(indexee instanceof HypeIndexable)) {
+    if (!(indexee instanceof LoxIndexable)) {
       throw new RuntimeError(expr.bracket, "Variable is not indexable");
     }
     Object index = evaluate(expr.index);
     Object value = evaluate(expr.value);
-    ((HypeIndexable) indexee).set(expr.bracket, index, value);
+    ((LoxIndexable) indexee).set(expr.bracket, index, value);
     return value;
   }
 
   @Override
   public Object visitSuperExpr(Expr.Super expr) {
     int distance = locals.get(expr);
-    HypeClass superclass = (HypeClass)environment.getAt(distance, "super");
+    LoxClass superclass = (LoxClass)environment.getAt(distance, "super");
     // "this" is always one level nearer than "super"'s environment.
-    HypeInstance object = (HypeInstance)environment.getAt(distance - 1, "this");
-    HypeFunction method = superclass.findMethod(object, expr.method.lexeme);
+    LoxInstance object = (LoxInstance)environment.getAt(distance - 1, "this");
+    LoxFunction method = superclass.findMethod(object, expr.method.lexeme);
 
     if (method == null) {
       throw new RuntimeError(expr.method,
           "Undefined property '" + expr.method.lexeme + "'.");
     }
 
-    if (((HypeFunction) method).isGetter()) {
-      return ((HypeFunction) method).call(this, null);
+    if (((LoxFunction) method).isGetter()) {
+      return ((LoxFunction) method).call(this, null);
     }
 
     return method;
@@ -297,7 +299,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Object visitArrayExpr(Expr.Array expr) {
-    return new HypeArray(expr.elements.stream()
+    return new LoxArray(expr.elements.stream()
         .map(this::evaluate)
         .collect(Collectors.toList()));
   }
@@ -379,8 +381,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       return text;
     }
 
-    if (object instanceof HypeArray) {
-      List<String> elStrings = ((HypeArray) object).getElements().stream()
+    if (object instanceof LoxArray) {
+      List<String> elStrings = ((LoxArray) object).getElements().stream()
           .map(this::stringify)
           .collect(Collectors.toList());
       return "[" + String.join(", ", elStrings) + "]";
@@ -397,7 +399,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    HypeFunction function = new HypeFunction(stmt, environment, false);
+    LoxFunction function = new LoxFunction(stmt, environment, false);
     environment.define(stmt.name.lexeme, function);
     return null;
   }

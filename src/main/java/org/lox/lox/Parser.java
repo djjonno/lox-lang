@@ -1,10 +1,10 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hyperion.hype.TokenType.*;
+import static org.lox.lox.TokenType.*;
 
 public class Parser {
   private static class ParseError extends RuntimeException {}
@@ -309,7 +309,7 @@ public class Parser {
   private Expr multiplication() {
     Expr expr = unary();
 
-    while (match(SLASH, STAR, MODULO)) {
+    while (match(SLASH, STAR, EXPONENT, MODULO)) {
       Token operator = previous();
       Expr right = unary();
       expr = new Expr.Binary(expr, operator, right);
@@ -483,7 +483,7 @@ public class Parser {
   }
 
   private ParseError error(Token token, String message) {
-    Hype.error(token, message);
+    Lox.error(token, message);
     return new ParseError();
   }
 

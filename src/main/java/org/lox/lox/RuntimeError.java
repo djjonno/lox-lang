@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 public class RuntimeError extends RuntimeException {
   final Token token;

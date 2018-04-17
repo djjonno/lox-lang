@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +72,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     Map<String, Boolean> scope = scopes.peek();
     if (scope.containsKey(name.lexeme)) {
-      Hype.error(name,
+      Lox.error(name,
           "Variable with this name already declared in this scope.");
     }
     scope.put(name.lexeme, false);
@@ -172,10 +172,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitSuperExpr(Expr.Super expr) {
     if (currentClass == ClassType.NONE) {
-      Hype.error(expr.keyword,
+      Lox.error(expr.keyword,
           "Cannot use 'super' outside of a class.");
     } else if (currentClass != ClassType.SUBCLASS) {
-      Hype.error(expr.keyword,
+      Lox.error(expr.keyword,
           "Cannot use 'super' in a class with no superclass.");
     }
 
@@ -186,7 +186,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitThisExpr(Expr.This expr) {
     if (currentClass == ClassType.NONE) {
-      Hype.error(expr.keyword,
+      Lox.error(expr.keyword,
           "Cannt use 'this' outside of a class.");
       return null;
     }
@@ -204,7 +204,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitVariableExpr(Expr.Variable expr) {
     if (!scopes.isEmpty() &&
         scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
-      Hype.error(expr.name,
+      Lox.error(expr.name,
           "Cannot read local variable in its own initializer");
     }
 
@@ -290,12 +290,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitReturnStmt(Stmt.Return stmt) {
     if (currentFunction == FunctionType.NONE) {
-      Hype.error(stmt.keyword, "Cannot return from top-level code.");
+      Lox.error(stmt.keyword, "Cannot return from top-level code.");
     }
 
     if (stmt.value != null) {
       if (currentFunction == FunctionType.INITIALIZER) {
-        Hype.error(stmt.keyword,
+        Lox.error(stmt.keyword,
             "Cannot return a value from an initializer.");
       }
       resolve(stmt.value);

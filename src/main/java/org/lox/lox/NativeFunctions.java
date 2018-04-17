@@ -1,4 +1,4 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.List;
 import java.util.Scanner;
@@ -12,7 +12,7 @@ public class NativeFunctions {
     env.define("input", input);
   }
 
-  private final static HypeCallable clock = new HypeCallable() {
+  private final static LoxCallable clock = new LoxCallable() {
     @Override
     public int arity() {
       return 0;
@@ -24,7 +24,7 @@ public class NativeFunctions {
     }
   };
 
-  private final static HypeCallable log = new HypeCallable() {
+  private final static LoxCallable log = new LoxCallable() {
     @Override
     public int arity() {
       return 0;
@@ -45,7 +45,7 @@ public class NativeFunctions {
     }
   };
 
-  private final static HypeCallable input = new HypeCallable() {
+  private final static LoxCallable input = new LoxCallable() {
     @Override
     public int arity() {
       return 0;

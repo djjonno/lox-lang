@@ -1,23 +1,23 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HypeArray implements HypeIndexable {
+public class LoxArray implements LoxIndexable {
 
   private List<Object> elements;
-  private final Map<String, HypeCallable> methods;
+  private final Map<String, LoxCallable> methods;
 
-  HypeArray(List<Object> elements) {
+  LoxArray(List<Object> elements) {
     this.elements = elements;
     methods = createMethods(this);
   }
 
-  private static Map<String, HypeCallable> createMethods(HypeArray array) {
-    Map<String, HypeCallable> methods = new HashMap<>();
+  private static Map<String, LoxCallable> createMethods(LoxArray array) {
+    Map<String, LoxCallable> methods = new HashMap<>();
 
-    methods.put("add", new HypeCallable() {
+    methods.put("add", new LoxCallable() {
       @Override
       public int arity() {
         return 0;
@@ -33,7 +33,7 @@ public class HypeArray implements HypeIndexable {
         return array.elements.addAll(arguments);
       }
     });
-    methods.put("pop", new HypeCallable() {
+    methods.put("pop", new LoxCallable() {
       @Override
       public int arity() {
         return 0;
@@ -49,7 +49,7 @@ public class HypeArray implements HypeIndexable {
         return null;
       }
     });
-    methods.put("remove", new HypeCallable() {
+    methods.put("remove", new LoxCallable() {
       @Override
       public int arity() {
         return 1;
@@ -67,7 +67,7 @@ public class HypeArray implements HypeIndexable {
         }
       }
     });
-    methods.put("length", new HypeCallable() {
+    methods.put("length", new LoxCallable() {
       @Override
       public int arity() {
         return 0;
@@ -78,7 +78,7 @@ public class HypeArray implements HypeIndexable {
         return new Double(array.length());
       }
     });
-    methods.put("isEmpty", new HypeCallable() {
+    methods.put("isEmpty", new LoxCallable() {
       @Override
       public int arity() {
         return 0;

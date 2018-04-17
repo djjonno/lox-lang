@@ -1,10 +1,10 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 public enum TokenType {
   // Single-character tokens.
   LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
   LEFT_BRACKET, RIGHT_BRACKET, COMMA, DOT, MINUS,
-  PLUS, SEMICOLON, COLON, SLASH, STAR, MODULO,
+  PLUS, SEMICOLON, COLON, SLASH, STAR, MODULO, EXPONENT,
 
   // One or two character tokens.
   BANG, BANG_EQUAL,

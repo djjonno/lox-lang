@@ -1,16 +1,16 @@
-package org.hyperion.hype;
+package org.lox.lox;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HypeInstance {
+public class LoxInstance {
 
-  protected HypeClass klass;
+  protected LoxClass klass;
   protected final Map<String, Object> fields = new HashMap<>();
 
-  HypeInstance() {}
+  LoxInstance() {}
 
-  HypeInstance(HypeClass klass) {
+  LoxInstance(LoxClass klass) {
     this.klass = klass;
   }
 
@@ -19,7 +19,7 @@ public class HypeInstance {
       return fields.get(name.lexeme);
     }
 
-    HypeFunction method = klass.findMethod(this, name.lexeme);
+    LoxFunction method = klass.findMethod(this, name.lexeme);
     if (method != null) return method;
 
     throw new RuntimeError(name,
